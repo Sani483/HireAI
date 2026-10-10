@@ -1,5 +1,9 @@
 from fastapi import FastAPI
+from sqlalchemy import text
 from fastapi.middleware.cors import CORSMiddleware
+from app.database.connection import engine
+from app.api.auth import router as auth_router
+
 
 app = FastAPI(
     title="HireAI API",
@@ -14,6 +18,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(auth_router)
 
 
 @app.get("/")
@@ -29,3 +34,20 @@ def health_check():
         "status": "healthy",
         "message": "HireAI backend is running"
     }
+
+@app.get("/api/database-test")
+def database_test():
+    try:
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+
+        return {
+            "status": "success",
+            "message": "PostgreSQL connection successful"
+        }
+
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": str(e)
+        }
