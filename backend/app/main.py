@@ -3,6 +3,8 @@ from sqlalchemy import text
 from fastapi.middleware.cors import CORSMiddleware
 from app.database.connection import engine
 from app.api.auth import router as auth_router
+from app.api.jobs import router as jobs_router
+from app.api.applications import router as applications_router
 
 
 app = FastAPI(
@@ -19,7 +21,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(auth_router)
-
+app.include_router(jobs_router)
+app.include_router(applications_router)
 
 @app.get("/")
 def home():
